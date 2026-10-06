@@ -1,4 +1,5 @@
-package PACKAGE_NAME;
-
 public enum OrderStatus {
+    PROCESSING,
+    IN_DELIVERY,
+    COMPLETED
 }

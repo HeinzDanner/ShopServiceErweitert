@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderListRepo implements OrderRepo{
+public class OrderListRepo implements OrderRepo {
     private List<Order> orders = new ArrayList<>();
 
     public List<Order> getOrders() {
@@ -29,5 +29,23 @@ public class OrderListRepo implements OrderRepo{
                 return;
             }
         }
+    }
+
+    @Override
+    public Order updateOrder(String id, OrderStatus newStatus) {
+        for (int i = 0; i < orders.size(); i++) {
+            Order existing = orders.get(i);
+            if (existing.id().equals(id)) {
+                Order updated = new Order(
+                        existing.id(),
+                        existing.products(),
+                        newStatus,
+                        existing.createdAt()
+                );
+                orders.set(i, updated);
+                return updated;
+            }
+        }
+        return null;
     }
 }
