@@ -1,0 +1,4 @@
+addOrder A 1:2.5 2:1 3:0.5
+addOrder B 1:1
+setStatus A COMPLETED
+printOrders

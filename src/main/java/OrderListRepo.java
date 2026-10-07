@@ -36,16 +36,12 @@ public class OrderListRepo implements OrderRepo {
         for (int i = 0; i < orders.size(); i++) {
             Order existing = orders.get(i);
             if (existing.id().equals(id)) {
-                Order updated = new Order(
-                        existing.id(),
-                        existing.products(),
-                        newStatus,
-                        existing.createdAt()
-                );
+                Order updated = existing.withOrderStatus(newStatus);
                 orders.set(i, updated);
                 return updated;
             }
         }
         return null;
     }
+
 }

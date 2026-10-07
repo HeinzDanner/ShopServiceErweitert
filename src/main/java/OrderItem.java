@@ -1,4 +1,2 @@
-package PACKAGE_NAME;
-
-public record OrderItem() {
+public record OrderItem(String productId, double quantity) {
 }
