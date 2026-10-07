@@ -80,6 +80,5 @@ printOrders
 
 ## Hinweise
 
-- `README.md` liegt auf derselben Ebene wie `pom.xml`.
 - Für reproduzierbare Ausführung sollte `transactions.txt` im Projekt-Root liegen.
 - Alle zentralen Schritte sind durch Tests abgedeckt.
