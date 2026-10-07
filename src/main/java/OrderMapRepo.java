@@ -33,15 +33,9 @@ public class OrderMapRepo implements OrderRepo {
         if (existing == null) {
             return null;
         }
-
-        Order updated = new Order(
-                existing.id(),
-                existing.products(),
-                newStatus,
-                existing.createdAt()
-        );
+        Order updated = existing.withOrderStatus(newStatus);
         orders.put(id, updated);
         return updated;
     }
-
 }
+

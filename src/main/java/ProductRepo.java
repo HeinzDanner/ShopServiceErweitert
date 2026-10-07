@@ -3,11 +3,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class ProductRepo {
-    private List<Product> products;
+    private final List<Product> products;
 
     public ProductRepo() {
         products = new ArrayList<>();
-        products.add(new Product("1", "Apfel"));
+        products.add(new Product("1", "Apfel", 10.0));
+        products.add(new Product("2", "Birne", 8.0));
+        products.add(new Product("3", "Banane", 12.5));
     }
 
     public List<Product> getProducts() {
@@ -15,23 +17,24 @@ public class ProductRepo {
     }
 
     public Optional<Product> getProductById(String id) {
-        for (Product product : products) {
-            if (product.id().equals(id)) {
-                return Optional.of(product);
-            }
-        }
-        return Optional.empty();
+        return products.stream()
+                .filter(product -> product.id().equals(id))
+                .findFirst();
     }
 
-    public Product addProduct(Product newProduct) {
-        products.add(newProduct);
-        return newProduct;
+    public Product addProduct(Product product) {
+        products.add(product);
+        return product;
     }
 
     public void removeProduct(String id) {
-        for (Product product : products) {
-            if (product.id().equals(id)) {
-                products.remove(product);
+        products.removeIf(product -> product.id().equals(id));
+    }
+
+    public void updateProduct(Product updated) {
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).id().equals(updated.id())) {
+                products.set(i, updated);
                 return;
             }
         }

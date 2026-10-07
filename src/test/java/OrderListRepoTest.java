@@ -12,17 +12,32 @@ class OrderListRepoTest {
     private static final Instant CREATED_AT = Instant.parse("2026-01-01T12:00:00Z");
 
     @Test
+    void updateOrder_changesOnlyStatusAndKeepsOriginalUnchanged() {
+        OrderListRepo repo = new OrderListRepo();
+        Order original = new Order("1", List.of(new OrderItem("1", 1.0)),
+                OrderStatus.PROCESSING, CREATED_AT);
+        repo.addOrder(original);
+
+        Order actual = repo.updateOrder("1", OrderStatus.IN_DELIVERY);
+
+        Order expected = new Order("1", List.of(new OrderItem("1", 1.0)),
+                OrderStatus.IN_DELIVERY, CREATED_AT);
+        assertEquals(expected, actual);
+        assertEquals(expected, repo.getOrderById("1"));
+        assertEquals(OrderStatus.PROCESSING, original.orderStatus());
+    }
+
+    @Test
     void getOrders() {
         //GIVEN
         OrderListRepo repo = new OrderListRepo();
 
-        Product product = new Product("1", "Apfel");
-        Order newOrder = new Order("1", List.of(product),
+        Order newOrder = new Order("1", List.of(new OrderItem("1", 1.0)),
                 OrderStatus.PROCESSING,
                 CREATED_AT
         );
         repo.addOrder(newOrder);
-        Order secondOrder = new Order("2", List.of(new Product("2", "Banane")),
+        Order secondOrder = new Order("2", List.of(new OrderItem("2", 1.0)),
                 OrderStatus.COMPLETED, CREATED_AT.plusSeconds(60));
         repo.addOrder(secondOrder);
 
@@ -30,12 +45,12 @@ class OrderListRepoTest {
         List<Order> actual = repo.getOrders();
 
         //THEN
-        Product product1 = new Product("1", "Apfel");
-        List<Order> expected = List.of(new Order("1", List.of(product1),
-                OrderStatus.PROCESSING,
-                CREATED_AT),
-                new Order("2", List.of(new Product("2", "Banane")),
-                        OrderStatus.COMPLETED, CREATED_AT.plusSeconds(60)));
+        List<Order> expected = List.of(
+                new Order("1", List.of(new OrderItem("1", 1.0)),
+                        OrderStatus.PROCESSING, CREATED_AT),
+                new Order("2", List.of(new OrderItem("2", 1.0)),
+                        OrderStatus.COMPLETED, CREATED_AT.plusSeconds(60))
+        );
 
         assertEquals(expected, actual);
     }
@@ -46,21 +61,19 @@ class OrderListRepoTest {
         //GIVEN
         OrderListRepo repo = new OrderListRepo();
 
-        Product product = new Product("1", "Apfel");
-        Order newOrder = new Order("1", List.of(product),
+        Order newOrder = new Order("1", List.of(new OrderItem("1", 1.0)),
                 status,
                 CREATED_AT
         );
         repo.addOrder(newOrder);
-        repo.addOrder(new Order("2", List.of(product), OrderStatus.COMPLETED,
+        repo.addOrder(new Order("2", List.of(new OrderItem("1", 1.0)), OrderStatus.COMPLETED,
                 CREATED_AT.plusSeconds(60)));
 
         //WHEN
         Order actual = repo.getOrderById("1");
 
         //THEN
-        Product product1 = new Product("1", "Apfel");
-        Order expected = new Order("1", List.of(product1),
+        Order expected = new Order("1", List.of(new OrderItem("1", 1.0)),
                 status,
                 CREATED_AT
         );
@@ -73,8 +86,7 @@ class OrderListRepoTest {
     void addOrder_preservesStatusAndCreatedAt(OrderStatus status) {
         //GIVEN
         OrderListRepo repo = new OrderListRepo();
-        Product product = new Product("1", "Apfel");
-        Order newOrder = new Order("1", List.of(product),
+        Order newOrder = new Order("1", List.of(new OrderItem("1", 1.0)),
                 status,
                 CREATED_AT
         );
@@ -83,8 +95,7 @@ class OrderListRepoTest {
         Order actual = repo.addOrder(newOrder);
 
         //THEN
-        Product product1 = new Product("1", "Apfel");
-        Order expected = new Order("1", List.of(product1),
+        Order expected = new Order("1", List.of(new OrderItem("1", 1.0)),
                 status,
                 CREATED_AT
         );
@@ -97,9 +108,9 @@ class OrderListRepoTest {
     void removeOrder() {
         //GIVEN
         OrderListRepo repo = new OrderListRepo();
-        Order order = new Order("1", List.of(new Product("1", "Apfel")),
+        Order order = new Order("1", List.of(new OrderItem("1", 1.0)),
                 OrderStatus.PROCESSING, CREATED_AT);
-        Order remainingOrder = new Order("2", List.of(new Product("2", "Banane")),
+        Order remainingOrder = new Order("2", List.of(new OrderItem("2", 1.0)),
                 OrderStatus.IN_DELIVERY, CREATED_AT.plusSeconds(60));
         repo.addOrder(order);
         repo.addOrder(remainingOrder);
@@ -122,7 +133,7 @@ class OrderListRepoTest {
     @Test
     void getOrderById_whenUnknown_returnsNull() {
         OrderListRepo repo = new OrderListRepo();
-        repo.addOrder(new Order("1", List.of(new Product("1", "Apfel")),
+        repo.addOrder(new Order("1", List.of(new OrderItem("1", 1.0)),
                 OrderStatus.PROCESSING, CREATED_AT));
 
         assertNull(repo.getOrderById("unknown"));
@@ -131,7 +142,7 @@ class OrderListRepoTest {
     @Test
     void removeOrder_whenUnknown_keepsExistingOrders() {
         OrderListRepo repo = new OrderListRepo();
-        Order order = new Order("1", List.of(new Product("1", "Apfel")),
+        Order order = new Order("1", List.of(new OrderItem("1", 1.0)),
                 OrderStatus.PROCESSING, CREATED_AT);
         repo.addOrder(order);
 
